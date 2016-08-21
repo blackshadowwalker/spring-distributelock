@@ -1,2 +1,2 @@
-# srping-distributelock
+# Spring Distributelock
 
