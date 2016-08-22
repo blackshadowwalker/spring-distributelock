@@ -1,4 +1,4 @@
-package com.black.spring.distributelock;
+package com.black.spring.distributelock.interceptor;
 
 /**
  * Created by ASUS on 2016/8/16.
@@ -7,7 +7,7 @@ public class LockOperation {
 
 	String name;
 	String key;
-	long timeout;//ms
+	long timeout;//seconds
 	String msg;
 
 	public LockOperation() {

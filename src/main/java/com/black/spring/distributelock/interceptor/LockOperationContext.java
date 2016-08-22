@@ -1,5 +1,6 @@
-package com.black.spring.distributelock;
+package com.black.spring.distributelock.interceptor;
 
+import com.black.spring.distributelock.Lock;
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.util.ObjectUtils;

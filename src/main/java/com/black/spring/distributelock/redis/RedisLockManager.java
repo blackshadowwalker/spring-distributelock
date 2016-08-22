@@ -2,9 +2,9 @@ package com.black.spring.distributelock.redis;
 
 import com.black.spring.distributelock.Lock;
 import com.black.spring.distributelock.LockManager;
-import com.black.spring.distributelock.LockOperation;
-import com.black.spring.distributelock.LockOperationContext;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import com.black.spring.distributelock.interceptor.LockOperation;
+import com.black.spring.distributelock.interceptor.LockOperationContext;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,12 +14,7 @@ import java.util.Map;
  */
 public class RedisLockManager implements LockManager {
 
-	private StringRedisTemplate redisTemplate;
-	private RedisLockExecutorService executorService = new RedisLockExecutorService();
-
-	public RedisLockManager(StringRedisTemplate redisTemplate) {
-		this.redisTemplate = redisTemplate;
-	}
+	private RedisTemplate redisTemplate;
 
 	private ThreadLocal<Map<LockOperation, RedisLock>> local = new ThreadLocal<Map<LockOperation, RedisLock>>();
 
@@ -31,9 +26,9 @@ public class RedisLockManager implements LockManager {
 	public Lock getLock(LockOperationContext context, String key) {
 		LockOperation operation = context.getMetadata().getOperation();
 		String name = (lockPrefix != null ? lockPrefix : "") + operation.getName();
-		long timeout = operation.getTimeout();
+		long timeout = operation.getTimeout() * 1000;
 		if (!cacheLock) {
-			return new RedisLock(name, key, timeout, operation.getMsg(), redisTemplate, executorService);
+			return new RedisLock(name, key, timeout, operation.getMsg(), redisTemplate);
 		}
 
 		Map<LockOperation, RedisLock> lockCache = local.get();
@@ -43,7 +38,7 @@ public class RedisLockManager implements LockManager {
 		}
 		RedisLock lock = lockCache.get(operation);
 		if (lock == null) {
-			lock = new RedisLock(name, key, timeout, operation.getMsg(), redisTemplate, executorService);
+			lock = new RedisLock(name, key, timeout, operation.getMsg(), redisTemplate);
 			lockCache.put(new LockOperation(operation.getName(), operation.getKey(), operation.getTimeout(), operation.getMsg()), lock);
 		}
 		return lock;
@@ -63,5 +58,9 @@ public class RedisLockManager implements LockManager {
 
 	public void setCacheLock(boolean cacheLock) {
 		this.cacheLock = cacheLock;
+	}
+
+	public void setRedisTemplate(RedisTemplate redisTemplate) {
+		this.redisTemplate = redisTemplate;
 	}
 }

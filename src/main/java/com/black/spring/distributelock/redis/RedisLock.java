@@ -5,7 +5,7 @@ import com.black.spring.distributelock.LockException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -16,22 +16,21 @@ import java.util.concurrent.TimeUnit;
 public class RedisLock implements Lock {
 	private static Log log = LogFactory.getLog(RedisLock.class);
 
-	private StringRedisTemplate stringRedisTemplate;
+	private RedisTemplate redisTemplate;
 
 	private final String name;
 	private final String key;
-	private final long timeout;
+	private final long timeout;//ms
 	private final String msg;
 
 	private final String lockName;
 
-	public RedisLock(String name, String key, long timeout, String msg, StringRedisTemplate redisTemplate,
-			RedisLockExecutorService executorService) {
+	public RedisLock(String name, String key, long timeout, String msg, RedisTemplate redisTemplate) {
 		this.name = name;
 		this.key = key;
 		this.timeout = timeout;
 		this.lockName = this.name + ":" + key;
-		this.stringRedisTemplate = redisTemplate;
+		this.redisTemplate = redisTemplate;
 		this.msg = msg;
 	}
 
@@ -74,7 +73,7 @@ public class RedisLock implements Lock {
 	long MAX_TIMEOUT = 1000 * 3600 * 2;
 
 	private void tryLock() {
-		BoundValueOperations operations = stringRedisTemplate.boundValueOps(lockName);
+		BoundValueOperations operations = redisTemplate.boundValueOps(lockName);
 		long st = System.currentTimeMillis();
 		while (!locked) {
 			if (cancel) {
@@ -84,7 +83,7 @@ public class RedisLock implements Lock {
 			long expireTime = (timeout < 1) ? Long.MAX_VALUE : (timestamp + timeout);
 			long oldValue = get(operations);
 			if (oldValue > 0 && timestamp > oldValue) {
-				stringRedisTemplate.delete(lockName);
+				redisTemplate.delete(lockName);
 			}
 
 			locked = operations.setIfAbsent(String.valueOf(expireTime));
@@ -115,7 +114,7 @@ public class RedisLock implements Lock {
 	@Override
 	public void unlock() {
 		if (locked) {
-			stringRedisTemplate.delete(lockName);
+			redisTemplate.delete(lockName);
 			locked = false;
 			cancel = false;
 		}

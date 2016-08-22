@@ -13,26 +13,26 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @ComponentScan
 public class MyService {
-    private static Logger log = LoggerFactory.getLogger(MyService.class);
-    private Map<Long, Integer> users = new ConcurrentHashMap<Long, Integer>();
+	private static Logger log = LoggerFactory.getLogger(MyService.class);
+	private Map<Long, Integer> users = new ConcurrentHashMap<Long, Integer>();
 
-    @DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 10 * 1000, errMsg = "更新失败，请刷新重试")
-    public Integer updateUserStatus(Long userId, Integer status) throws Exception {
-        log.info("update user {} status to {}", userId, status);
-        Integer oldStatus = users.get(userId);
-        users.put(userId, status);
-        return oldStatus;
-    }
+	@DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 10, errMsg = "更新失败，请刷新重试")
+	public Integer updateUserStatus(Long userId, Integer status) throws Exception {
+		log.info("update user {} status to {}", userId, status);
+		Integer oldStatus = users.get(userId);
+		users.put(userId, status);
+		return oldStatus;
+	}
 
-    public void insert(Long userId, Integer status) {
-        if (users.containsKey(userId)) {
-            return ;
-        }
-        users.put(userId, status);
-    }
+	public void insert(Long userId, Integer status) {
+		if (users.containsKey(userId)) {
+			return;
+		}
+		users.put(userId, status);
+	}
 
-    public Integer getUserStatus(Long userId) {
-        return users.get(userId);
-    }
+	public Integer getUserStatus(Long userId) {
+		return users.get(userId);
+	}
 
 }

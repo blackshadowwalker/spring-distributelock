@@ -1,4 +1,7 @@
-package com.black.spring.distributelock;
+package com.black.spring.distributelock.interceptor;
+
+import com.black.spring.distributelock.LockKeyGenerator;
+import com.black.spring.distributelock.LockManager;
 
 import java.lang.reflect.Method;
 

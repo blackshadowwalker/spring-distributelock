@@ -10,15 +10,30 @@ import java.lang.annotation.*;
 @Documented
 public @interface DistributeLock {
 
-	// 锁的名字,默认是方法或类的名字
+	/**
+	 * The lock Name, if empty the value is `targetClass.getName() + "#" + method.getName()`.
+	 * 
+	 * @return
+	 */
 	String value() default "";
 
-	// 锁的key (Spel)
+	/**
+	 * Lock key (Spel), if empty keyGenerator will be work.
+	 */
 	String key() default "";
 
-	// 获取锁 失败的提示 new LockException(errMsg)
-	String errMsg() default "请勿重复提交";
+	/**
+	 * The error msg if get lock failed(new LockException(errMsg))
+	 * 
+	 * @return
+	 */
+	String errMsg() default "Failed Get Lock";
 
-	long timeout() default 20 * 1000;
+	/**
+	 * Timeout when getLock (seconds)
+	 * 
+	 * @return
+	 */
+	long timeout() default 20;
 
 }

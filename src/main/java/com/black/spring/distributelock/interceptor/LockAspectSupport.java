@@ -1,16 +1,15 @@
-package com.black.spring.distributelock;
+package com.black.spring.distributelock.interceptor;
 
+import com.black.spring.distributelock.Lock;
+import com.black.spring.distributelock.LockKeyGenerator;
+import com.black.spring.distributelock.LockManager;
 import com.black.spring.distributelock.annotation.DistributeLock;
-import com.black.spring.distributelock.redis.RedisLockManager;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.aop.framework.AopProxyUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -25,7 +24,6 @@ import java.util.List;
 /**
  * Created by ASUS on 2016/8/16.
  */
-@Component
 @Aspect
 public class LockAspectSupport {
 
@@ -58,19 +56,14 @@ public class LockAspectSupport {
 	private LockKeyGenerator keyGenerator = new ParameterLockKeyGenerator();
 	private LockManager lockManager;
 
-	@Autowired
-	private StringRedisTemplate redisTemplate;
-
 	@PostConstruct
 	public void init() {
-		if (lockManager == null) {
-			lockManager = new RedisLockManager(redisTemplate);
-		}
+
 	}
 
 	public Object execute(LockOperationInvoker invoker, Object target, Method method, Object[] args) throws Exception {
 		Class<?> targetClass = getTargetClass(target);
-		Collection<LockOperation> operations = parseAnnotations(method, method);
+		Collection<LockOperation> operations = parseAnnotations(targetClass, method, method);
 		if (operations == null || operations.isEmpty()) {
 			return invoker.invoke();
 		}
@@ -121,14 +114,25 @@ public class LockAspectSupport {
 		return targetClass;
 	}
 
-	private Collection<LockOperation> parseAnnotations(AnnotatedElement ae, Method method) {
+	private Collection<LockOperation> parseAnnotations(Class<?> targetClass, AnnotatedElement ae, Method method) {
 		List<LockOperation> list = new ArrayList<LockOperation>();
 		DistributeLock lock = ae.getAnnotation(DistributeLock.class);
 		if (lock != null) {
-			String name = lock.value() != null ? lock.value() : method.getName();
+			String name = lock.value();
+			if (name == null || name.isEmpty()) {
+				name = targetClass.getName() + "#" + method.getName();
+			}
 			list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.errMsg()));
 		}
 		return list;
+	}
+
+	public void setKeyGenerator(LockKeyGenerator keyGenerator) {
+		this.keyGenerator = keyGenerator;
+	}
+
+	public void setLockManager(LockManager lockManager) {
+		this.lockManager = lockManager;
 	}
 
 }

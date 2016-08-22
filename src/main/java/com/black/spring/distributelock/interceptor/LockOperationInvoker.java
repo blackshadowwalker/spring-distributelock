@@ -1,4 +1,4 @@
-package com.black.spring.distributelock;
+package com.black.spring.distributelock.interceptor;
 
 /**
  * Created by ASUS on 2016/8/16.
@@ -8,11 +8,11 @@ public interface LockOperationInvoker {
 	/**
 	 * Invoke the cache operation defined by this instance. Wraps any
 	 * exception that is thrown during the invocation in a
-	 * {@link com.black.spring.distributelock.LockOperationInvoker.ThrowableWrapper}
+	 * {@link LockOperationInvoker.ThrowableWrapper}
 	 * .
 	 * 
 	 * @return the result of the operation
-	 * @throws com.black.spring.distributelock.LockOperationInvoker.ThrowableWrapper
+	 * @throws LockOperationInvoker.ThrowableWrapper
 	 *             if an error occurred while invoking the operation
 	 */
 	Object invoke() throws ThrowableWrapper;

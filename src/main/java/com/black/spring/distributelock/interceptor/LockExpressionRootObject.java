@@ -1,6 +1,6 @@
-package com.black.spring.distributelock;
+package com.black.spring.distributelock.interceptor;
 
-import org.springframework.cache.Cache;
+import com.black.spring.distributelock.Lock;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
