@@ -56,14 +56,16 @@ public class LockAspectSupport {
 
 	private final LockExpressionEvaluator evaluator = new LockExpressionEvaluator();
 	private LockKeyGenerator keyGenerator = new ParameterLockKeyGenerator();
-	private LockManager defaultLockManager;
+	private LockManager lockManager;
 
 	@Autowired
 	private StringRedisTemplate redisTemplate;
 
 	@PostConstruct
 	public void init() {
-		defaultLockManager = new RedisLockManager(redisTemplate);
+		if (lockManager == null) {
+			lockManager = new RedisLockManager(redisTemplate);
+		}
 	}
 
 	public Object execute(LockOperationInvoker invoker, Object target, Method method, Object[] args) throws Exception {
@@ -81,7 +83,7 @@ public class LockAspectSupport {
 		for (LockOperationContext context : lockOperationContexts) {
 			//try lock
 			String key = String.valueOf(context.generateLockKey(evaluator));//parse Spel
-			Lock lock = defaultLockManager.getLock(context, key);
+			Lock lock = lockManager.getLock(context, key);
 			locks.add(lock);
 			lock.lock();
 		}
@@ -100,8 +102,7 @@ public class LockAspectSupport {
 		public LockContexts(Collection<? extends LockOperation> operations, Object target, Class<?> targetClass, Method method,
 				Object[] args) {
 			for (LockOperation ops : operations) {
-				LockOperationMetadata metadata = new LockOperationMetadata(ops, target, targetClass, method, keyGenerator,
-						defaultLockManager);
+				LockOperationMetadata metadata = new LockOperationMetadata(ops, target, targetClass, method, keyGenerator, lockManager);
 				this.contexts.add(ops.getClass(), new LockOperationContext(metadata, target, method, args));
 			}
 		}
@@ -124,8 +125,8 @@ public class LockAspectSupport {
 		List<LockOperation> list = new ArrayList<LockOperation>();
 		DistributeLock lock = ae.getAnnotation(DistributeLock.class);
 		if (lock != null) {
-			list.add(
-					new LockOperation(lock.value() != null ? lock.value() : method.getName(), lock.key(), lock.timeout(), lock.errMsg()));
+			String name = lock.value() != null ? lock.value() : method.getName();
+			list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.errMsg()));
 		}
 		return list;
 	}

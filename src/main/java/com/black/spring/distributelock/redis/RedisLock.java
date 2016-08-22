@@ -10,7 +10,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.concurrent.TimeUnit;
 
-
 /**
  * Created by ASUS on 2016/8/16.
  */
@@ -61,12 +60,12 @@ public class RedisLock implements Lock {
 		if (StringUtils.isEmpty(name)) {
 			return;
 		}
-        this.tryLock();
+		this.tryLock();
 		//has get the lock
 		if (!locked) {
 			throw new LockException(msg != null ? msg : "请勿重复提交");
 		}
-        log.info("Get Lock: " + this.lockName);
+		log.info(this + " Get Lock: " + this.lockName);
 	}
 
 	private volatile boolean cancel = false;
@@ -77,7 +76,7 @@ public class RedisLock implements Lock {
 	private void tryLock() {
 		BoundValueOperations operations = stringRedisTemplate.boundValueOps(lockName);
 		long st = System.currentTimeMillis();
-		while (! locked) {
+		while (!locked) {
 			if (cancel) {
 				break;
 			}
@@ -91,6 +90,7 @@ public class RedisLock implements Lock {
 			locked = operations.setIfAbsent(String.valueOf(expireTime));
 			if (locked) {
 				operations.expire(timeout, TimeUnit.MILLISECONDS);
+				log.info("locked " + operations.getKey());
 			}
 			try {
 				Long ttl = operations.getExpire();

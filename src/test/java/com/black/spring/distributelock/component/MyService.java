@@ -16,24 +16,12 @@ public class MyService {
     private static Logger log = LoggerFactory.getLogger(MyService.class);
     private Map<Long, Integer> users = new ConcurrentHashMap<Long, Integer>();
 
-    @DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 5 * 1000)
-    public Integer updateUserStatus(Long userId, Integer status, Integer sleepTime) throws Exception {
-        for (int i=0; i<sleepTime; i ++) {
-            this.sleep(1);
-        }
+    @DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 10 * 1000, errMsg = "更新失败，请刷新重试")
+    public Integer updateUserStatus(Long userId, Integer status) throws Exception {
         log.info("update user {} status to {}", userId, status);
         Integer oldStatus = users.get(userId);
-        for (int i=0; i<sleepTime; i ++) {
-            this.sleep(1);
-        }
         users.put(userId, status);
         return oldStatus;
-    }
-
-    public void sleep(int ms) {
-        try {
-            Thread.sleep(ms * 1000);
-        } catch (Exception e){ }
     }
 
     public void insert(Long userId, Integer status) {
