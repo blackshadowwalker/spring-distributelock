@@ -2,6 +2,8 @@ package com.black.spring.distributelock;
 
 /**
  * Created by ASUS on 2016/8/16.
+ * Pessimistic Locking
+ * 悲观锁，依赖于分布式
  */
 public interface Lock {
 
@@ -10,6 +12,8 @@ public interface Lock {
 	String getKey();
 
 	long getTimeout();
+
+	long getKeyExpire();
 
 	String getLockName();
 

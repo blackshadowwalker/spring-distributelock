@@ -6,7 +6,7 @@
 
     <groupId>com.black.spring.distributelock</groupId>
     <artifactId>spring-distributelock</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <encoding>UTF-8</encoding>

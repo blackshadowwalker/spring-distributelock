@@ -27,8 +27,9 @@ public class RedisLockManager implements LockManager {
 		LockOperation operation = context.getMetadata().getOperation();
 		String name = (lockPrefix != null ? lockPrefix : "") + operation.getName();
 		long timeout = operation.getTimeout() * 1000;
+		long expire = operation.getExpire() * 1000;
 		if (!cacheLock) {
-			return new RedisLock(name, key, timeout, operation.getMsg(), redisTemplate);
+			return new RedisLock(name, key, timeout, expire, operation.getMsg(), redisTemplate);
 		}
 
 		Map<LockOperation, RedisLock> lockCache = local.get();
@@ -38,8 +39,8 @@ public class RedisLockManager implements LockManager {
 		}
 		RedisLock lock = lockCache.get(operation);
 		if (lock == null) {
-			lock = new RedisLock(name, key, timeout, operation.getMsg(), redisTemplate);
-			lockCache.put(new LockOperation(operation.getName(), operation.getKey(), operation.getTimeout(), operation.getMsg()), lock);
+			lock = new RedisLock(name, key, timeout, expire, operation.getMsg(), redisTemplate);
+			lockCache.put(new LockOperation(operation.getName(), operation.getKey(), operation.getTimeout(), operation.getExpire(), operation.getMsg()), lock);
 		}
 		return lock;
 	}

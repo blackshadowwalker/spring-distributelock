@@ -41,6 +41,13 @@ public @interface DistributeLock {
 	 */
 	long timeout() default 20;
 
+	/**
+     * key expire time (seconds) if gt; 0
+     *
+     * @return key expire time in seconds
+     */
+    long expire() default -1;
+
 }
 ```
 
@@ -55,7 +62,7 @@ spring xml config
           p:cacheLock="true"
           p:redisTemplate-ref="stringRedisTemplate" />
 
-<aop:aspectj-autoproxy proxy-target-class="true"/>
+<aop:aspectj-autoproxy proxy-target-class="false"/>
 <bean class="com.black.spring.distributelock.interceptor.LockAspectSupport" p:lockManager-ref="lockManager" />
 
 ```
@@ -65,13 +72,9 @@ spring xml config
 e.g:
 
 ```java
-@DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 10, errMsg = "更新失败，请刷新重试")
+@DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 10, expire = 60, errMsg = "更新失败，请刷新重试")
 public Integer updateUserStatus(Long userId, Integer status) throws Exception {
     ...
     return ...;
 }
 ```
-
-
-
-

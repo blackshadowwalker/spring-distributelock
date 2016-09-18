@@ -8,15 +8,17 @@ public class LockOperation {
 	String name;
 	String key;
 	long timeout;//seconds
+	long expire;//seconds
 	String msg;
 
 	public LockOperation() {
 	}
 
-	public LockOperation(String name, String key, long timeout, String msg) {
+	public LockOperation(String name, String key, long timeout, long expire, String msg) {
 		this.name = name;
 		this.key = key;
 		this.timeout = timeout;
+		this.expire = expire;
 		this.msg = msg;
 	}
 
@@ -50,6 +52,14 @@ public class LockOperation {
 
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
+	}
+
+	public long getExpire() {
+		return expire;
+	}
+
+	public void setExpire(long expire) {
+		this.expire = expire;
 	}
 
 	@Override

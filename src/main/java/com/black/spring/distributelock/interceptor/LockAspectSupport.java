@@ -119,10 +119,10 @@ public class LockAspectSupport {
 		DistributeLock lock = ae.getAnnotation(DistributeLock.class);
 		if (lock != null) {
 			String name = lock.value();
-			if (name == null || name.isEmpty()) {
-				name = targetClass.getName() + "#" + method.getName();
+			if (name.isEmpty()) {
+				name = targetClass.getSimpleName() + "#" + method.getName();
 			}
-			list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.errMsg()));
+			list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.expire(), lock.errMsg()));
 		}
 		return list;
 	}
