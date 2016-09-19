@@ -23,7 +23,7 @@
         <constructor-arg name="port" value="${redis.server.port}"/>
         <constructor-arg name="timeout" value="${redis.server.timeout}"/>
         <constructor-arg name="password" value="${redis.server.pwd}"/>
-        <constructor-arg name="database" value="0"/>
+        <constructor-arg name="database" value="${redis.server.db}"/>
         <constructor-arg name="clientName" value="CRM"/>
     </bean>
 
@@ -33,6 +33,7 @@
           p:timeout="${redis.server.timeout}"
           p:password="${redis.server.pwd}"
           p:poolConfig-ref="poolConfig"
+          p:database="${redis.server.db}"
           p:usePool="true"/>
 
     <!-- redis 操作配置-->

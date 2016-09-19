@@ -68,12 +68,12 @@ public class RedisLock implements Lock {
         }
         this.tryLock();
         //has get the lock
-        if (!locked && msg.isEmpty()) {
-            throw new LockException(msg);
-        }
         if (locked) {
             log.info(this + " Get Lock: " + this.lockName);
             return true;
+        }
+        if (!msg.isEmpty()) {
+            throw new LockException(msg);
         }
         return false;
     }
