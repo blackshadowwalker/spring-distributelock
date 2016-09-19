@@ -81,11 +81,9 @@ public class LockAspectSupport {
             locks.add(lock);
             locked &= lock.lock();
         }
-        if (locked) {
-            return null;
-        }
+
         try {
-            return invoker.invoke();
+            return locked ? invoker.invoke() : null;
         } finally {
             for (Lock lock : locks) {
                 lock.unlock();
