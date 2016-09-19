@@ -62,16 +62,20 @@ public class RedisLock implements Lock {
     }
 
     @Override
-    public void lock() throws LockException {
+    public boolean lock() throws LockException {
         if (StringUtils.isEmpty(name)) {
-            return;
+            throw new LockException("lock name is null");
         }
         this.tryLock();
         //has get the lock
-        if (!locked) {
-            throw new LockException(msg != null ? msg : "请勿重复提交");
+        if (!locked && msg.isEmpty()) {
+            throw new LockException(msg);
         }
-        log.info(this + " Get Lock: " + this.lockName);
+        if (locked) {
+            log.info(this + " Get Lock: " + this.lockName);
+            return true;
+        }
+        return false;
     }
 
     private volatile boolean cancel = false;

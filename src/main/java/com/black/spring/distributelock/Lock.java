@@ -17,7 +17,7 @@ public interface Lock {
 
 	String getLockName();
 
-	void lock() throws LockException;
+	boolean lock() throws LockException;
 
 	void unlock();
 

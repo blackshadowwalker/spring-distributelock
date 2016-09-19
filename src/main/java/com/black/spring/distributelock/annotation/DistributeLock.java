@@ -25,10 +25,11 @@ public @interface DistributeLock {
 
     /**
      * The error msg if get lock failed(new LockException(errMsg))
+     * if empty will not throw LockException, just return false;
      *
      * @return
      */
-    String errMsg() default "Failed Get Lock";
+    String errMsg() default "";
 
     /**
      * Timeout when getLock (seconds)
