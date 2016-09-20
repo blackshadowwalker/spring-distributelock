@@ -12,6 +12,16 @@
 
 **DistributeLock**:
 
+maven
+
+```xml
+<dependency>
+    <groupId>com.github.blackshadowwalker.spring.distributelock</groupId>
+    <artifactId>spring-distributelock</artifactId>
+    <version>1.0.3</version>
+</dependency>
+```
+
 ```java
 public @interface DistributeLock {
 
@@ -57,13 +67,13 @@ public @interface DistributeLock {
 
 spring xml config
 ```xml
-<bean id="lockManager" class="com.black.spring.distributelock.redis.RedisLockManager"
+<bean id="lockManager" class="com.github.blackshadowwalker.spring.distributelock.redis.RedisLockManager"
           p:lockPrefix="${lock.prefix}"
           p:cacheLock="true"
           p:redisTemplate-ref="stringRedisTemplate" />
 
 <aop:aspectj-autoproxy proxy-target-class="false"/>
-<bean class="com.black.spring.distributelock.interceptor.LockAspectSupport" p:lockManager-ref="lockManager" />
+<bean class="com.github.blackshadowwalker.spring.distributelock.interceptor.LockAspectSupport" p:lockManager-ref="lockManager" />
 
 ```
 

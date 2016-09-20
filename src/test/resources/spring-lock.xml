@@ -40,14 +40,14 @@
     <bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate"
           p:connectionFactory-ref="jedisConnFactory"/>
 
-    <bean id="myService" class="com.black.spring.distributelock.component.MyService"></bean>
+    <bean id="myService" class="com.github.blackshadowwalker.spring.distributelock.component.MyService"></bean>
 
-    <bean id="lockManager" class="com.black.spring.distributelock.redis.RedisLockManager"
+    <bean id="lockManager" class="com.github.blackshadowwalker.spring.distributelock.redis.RedisLockManager"
           p:lockPrefix="${lock.prefix}"
           p:cacheLock="true"
           p:redisTemplate-ref="stringRedisTemplate" />
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-    <bean class="com.black.spring.distributelock.interceptor.LockAspectSupport" p:lockManager-ref="lockManager" />
+    <bean class="com.github.blackshadowwalker.spring.distributelock.interceptor.LockAspectSupport" p:lockManager-ref="lockManager" />
 
 </beans>
