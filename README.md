@@ -16,7 +16,7 @@ maven
 
 ```xml
 <dependency>
-    <groupId>com.github.blackshadowwalker.spring.distributelock</groupId>
+    <groupId>com.github.blackshadowwalker.spring</groupId>
     <artifactId>spring-distributelock</artifactId>
     <version>1.0.3</version>
 </dependency>
