@@ -21,4 +21,6 @@ public interface Lock {
 
 	void unlock();
 
+	boolean autoUnlock();
+
 }

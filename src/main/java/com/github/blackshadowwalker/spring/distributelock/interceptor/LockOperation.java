@@ -10,16 +10,18 @@ public class LockOperation {
 	long timeout;//seconds
 	long expire;//seconds
 	String msg;
+	boolean autoUnlock;
 
 	public LockOperation() {
 	}
 
-	public LockOperation(String name, String key, long timeout, long expire, String msg) {
+	public LockOperation(String name, String key, long timeout, long expire, String msg, boolean autoUnlock) {
 		this.name = name;
 		this.key = key;
 		this.timeout = timeout;
 		this.expire = expire;
 		this.msg = msg;
+		this.autoUnlock = autoUnlock;
 	}
 
 	public String getMsg() {
@@ -60,6 +62,14 @@ public class LockOperation {
 
 	public void setExpire(long expire) {
 		this.expire = expire;
+	}
+
+	public boolean isAutoUnlock() {
+		return autoUnlock;
+	}
+
+	public void setAutoUnlock(boolean autoUnlock) {
+		this.autoUnlock = autoUnlock;
 	}
 
 	@Override

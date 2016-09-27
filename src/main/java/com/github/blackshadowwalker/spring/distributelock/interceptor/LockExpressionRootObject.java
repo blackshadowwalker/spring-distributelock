@@ -1,7 +1,6 @@
 package com.github.blackshadowwalker.spring.distributelock.interceptor;
 
 import com.github.blackshadowwalker.spring.distributelock.Lock;
-import com.github.blackshadowwalker.spring.distributelock.Lock;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;

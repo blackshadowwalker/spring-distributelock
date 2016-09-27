@@ -45,4 +45,10 @@ public @interface DistributeLock {
      */
     long expire() default -1;
 
+    /**
+     * auto unlock , if false please set expire &gt 0
+     * @return
+     */
+    boolean autoUnLock() default true;
+
 }

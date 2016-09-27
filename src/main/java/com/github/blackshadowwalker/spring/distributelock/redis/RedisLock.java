@@ -23,10 +23,11 @@ public class RedisLock implements Lock {
     private final long timeout;//ms
     private final long expire;//ms
     private final String msg;
+    private final boolean autoUnlock;
 
     private final String lockName;
 
-    public RedisLock(String name, String key, long timeout, long expire, String msg, RedisTemplate redisTemplate) {
+    public RedisLock(String name, String key, long timeout, long expire, String msg, RedisTemplate redisTemplate, boolean autoUnlock) {
         this.name = name;
         this.key = key;
         this.timeout = timeout;
@@ -34,6 +35,12 @@ public class RedisLock implements Lock {
         this.lockName = this.name + ":" + key;
         this.redisTemplate = redisTemplate;
         this.msg = msg;
+        this.autoUnlock = autoUnlock;
+    }
+
+    @Override
+    public boolean autoUnlock() {
+        return autoUnlock;
     }
 
     @Override

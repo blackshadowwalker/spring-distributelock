@@ -1,8 +1,6 @@
 package com.github.blackshadowwalker.spring.distributelock.interceptor;
 
 import com.github.blackshadowwalker.spring.distributelock.Lock;
-import com.github.blackshadowwalker.spring.distributelock.interceptor.LockExpressionRootObject;
-import com.github.blackshadowwalker.spring.distributelock.Lock;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.context.expression.CachedExpressionEvaluator;

@@ -89,7 +89,9 @@ public class LockAspectSupport {
             return locked ? invoker.invoke() : null;
         } finally {
             for (Lock lock : locks) {
-                lock.unlock();
+                if (lock.autoUnlock()) {
+                    lock.unlock();
+                }
             }
         }
     }
@@ -127,7 +129,7 @@ public class LockAspectSupport {
             if (name.isEmpty()) {
                 name = targetClass.getSimpleName() + "#" + method.getName();
             }
-            list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.expire(), lock.errMsg()));
+            list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.expire(), lock.errMsg(), lock.autoUnLock()));
         }
         return list;
     }

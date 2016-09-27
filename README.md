@@ -18,7 +18,7 @@ maven
 <dependency>
     <groupId>com.github.blackshadowwalker.spring</groupId>
     <artifactId>spring-distributelock</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 ```
 
@@ -57,6 +57,12 @@ public @interface DistributeLock {
      * @return key expire time in seconds
      */
     long expire() default -1;
+
+     /**
+     * auto unlock , if false please set expire &gt 0
+     * @return
+     */
+    boolean autoUnLock() default true;
 
 }
 ```
