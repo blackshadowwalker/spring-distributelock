@@ -74,20 +74,17 @@ public class LockOperation {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
-		LockOperation operation = (LockOperation) o;
+		LockOperation that = (LockOperation) o;
 
-		if (timeout != operation.timeout)
-			return false;
-		if (name != null ? !name.equals(operation.name) : operation.name != null)
-			return false;
-		if (key != null ? !key.equals(operation.key) : operation.key != null)
-			return false;
-		return msg != null ? msg.equals(operation.msg) : operation.msg == null;
+		if (timeout != that.timeout) return false;
+		if (expire != that.expire) return false;
+		if (autoUnlock != that.autoUnlock) return false;
+		if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		if (key != null ? !key.equals(that.key) : that.key != null) return false;
+		return msg != null ? msg.equals(that.msg) : that.msg == null;
 
 	}
 
@@ -96,7 +93,9 @@ public class LockOperation {
 		int result = name != null ? name.hashCode() : 0;
 		result = 31 * result + (key != null ? key.hashCode() : 0);
 		result = 31 * result + (int) (timeout ^ (timeout >>> 32));
+		result = 31 * result + (int) (expire ^ (expire >>> 32));
 		result = 31 * result + (msg != null ? msg.hashCode() : 0);
+		result = 31 * result + (autoUnlock ? 1 : 0);
 		return result;
 	}
 }

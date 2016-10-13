@@ -69,7 +69,8 @@ public class RedisLock implements Lock {
     }
 
     @Override
-    public boolean lock() throws LockException {
+    public synchronized boolean lock() throws LockException {
+        this.locked = false;
         if (StringUtils.isEmpty(name)) {
             throw new LockException("lock name is null");
         }
@@ -78,6 +79,11 @@ public class RedisLock implements Lock {
         if (locked) {
             log.info(this + " Get Lock: " + this.lockName);
             return true;
+        }
+        try {
+            Thread.sleep(1000 * 10);
+        }catch (Exception e){
+
         }
         if (!msg.isEmpty()) {
             throw new LockException(msg);
