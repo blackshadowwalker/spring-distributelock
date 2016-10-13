@@ -77,13 +77,8 @@ public class RedisLock implements Lock {
         this.tryLock();
         //has get the lock
         if (locked) {
-            log.info(this + " Get Lock: " + this.lockName);
+            log.debug(this + " Get Lock: " + this.lockName);
             return true;
-        }
-        try {
-            Thread.sleep(1000 * 10);
-        }catch (Exception e){
-
         }
         if (!msg.isEmpty()) {
             throw new LockException(msg);
