@@ -75,7 +75,7 @@ spring xml config
 ```xml
 <bean id="lockManager" class="com.github.blackshadowwalker.spring.distributelock.redis.RedisLockManager"
           p:lockPrefix="${lock.prefix}"
-          p:cacheLock="true"
+          p:cacheLock="false"
           p:redisTemplate-ref="stringRedisTemplate" />
 
 <aop:aspectj-autoproxy proxy-target-class="false"/>
