@@ -108,7 +108,7 @@ public class RedisLock implements Lock {
             locked = operations.setIfAbsent(String.valueOf(expireTime));
             if (locked) {
                 operations.expire(expire, TimeUnit.MILLISECONDS);
-                log.info("locked " + operations.getKey());
+                log.debug("Locked " + operations.getKey());
             }
             try {
                 Long ttl = operations.getExpire();
