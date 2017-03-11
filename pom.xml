@@ -6,7 +6,7 @@
 
     <groupId>com.github.blackshadowwalker.spring</groupId>
     <artifactId>spring-distributelock</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
 
     <name>Spring Distribute</name>
     <url>https://github.com/blackshadowwalker/spring-distributelock</url>
