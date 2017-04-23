@@ -43,8 +43,8 @@ LockTest extends AbstractJUnit4SpringContextTests {
 
         try {
             myService.updateUserStatus(userId, 3);
-        } catch (Exception e) {
-            log.warn(e.getMessage());
+        } catch (LockException e) {
+            log.warn("ERROR:{}-{}", e.getCode(), e.getMessage());
             throw e;
         } finally {
             redis.delete(key);

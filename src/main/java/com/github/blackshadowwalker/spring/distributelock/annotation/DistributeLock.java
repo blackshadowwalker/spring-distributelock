@@ -23,6 +23,8 @@ public @interface DistributeLock {
      */
     String key() default "";
 
+    String errorCode() default "";
+
     /**
      * The error msg if get lock failed(new LockException(errMsg))
      * if empty will not throw LockException, just return false;
@@ -43,11 +45,11 @@ public @interface DistributeLock {
      *
      * @return key expire time in seconds
      */
-    long expire() default -1;
+    long expire() default 120;
 
     /**
-     * auto unlock , if false please set expire &gt 0
-     * @return
+     * auto unlock , if false please set expire greater 0
+     * @return true|false
      */
     boolean autoUnLock() default true;
 

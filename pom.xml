@@ -8,7 +8,7 @@
     <artifactId>spring-distributelock</artifactId>
     <version>1.0.8</version>
 
-    <name>Spring Distribute</name>
+    <name>Spring Distribute Lock</name>
     <url>https://github.com/blackshadowwalker/spring-distributelock</url>
     <description>Spring Distribute Lock.</description>
 

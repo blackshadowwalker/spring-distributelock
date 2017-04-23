@@ -16,7 +16,7 @@ public class MyService {
 	private static Logger log = LoggerFactory.getLogger(MyService.class);
 	private Map<Long, Integer> users = new ConcurrentHashMap<Long, Integer>();
 
-	@DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 10, expire = 60, errMsg = "更新失败，请刷新重试")
+	@DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 10, expire = 60, errorCode = "400", errMsg = "更新失败，请刷新重试")
 	public Integer updateUserStatus(Long userId, Integer status) throws Exception {
 		log.info("update user {} status to {}", userId, status);
 		Integer oldStatus = users.get(userId);

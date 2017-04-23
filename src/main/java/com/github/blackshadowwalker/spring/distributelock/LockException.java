@@ -5,6 +5,8 @@ package com.github.blackshadowwalker.spring.distributelock;
  */
 public class LockException extends RuntimeException {
 
+	private String code;
+
 	public LockException() {
 		super();
 	}
@@ -13,11 +15,20 @@ public class LockException extends RuntimeException {
 		super(message);
 	}
 
+	public LockException(String code, String message) {
+		super(message);
+		this.code = code;
+	}
+
 	public LockException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 	public LockException(Throwable cause) {
 		super(cause);
+	}
+
+	public String getCode() {
+		return code;
 	}
 }

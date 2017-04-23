@@ -18,24 +18,26 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RedisLock implements Lock {
     private static Log log = LogFactory.getLog(RedisLock.class);
 
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<Object, Object> redisTemplate;
 
     private final String name;
     private final String key;
     private final long timeout;//ms
     private final long expire;//ms
+    private final String code;
     private final String msg;
     private final boolean autoUnlock;
 
     private final String lockName;
 
-    public RedisLock(String name, String key, long timeout, long expire, String msg, RedisTemplate redisTemplate, boolean autoUnlock) {
+    public RedisLock(String name, String key, long timeout, long expire, String code, String msg, RedisTemplate redisTemplate, boolean autoUnlock) {
         this.name = name;
         this.key = key;
         this.timeout = timeout;
         this.expire = expire;
         this.lockName = this.name + ":" + key;
         this.redisTemplate = redisTemplate;
+        this.code = code;
         this.msg = msg;
         this.autoUnlock = autoUnlock;
     }
@@ -86,7 +88,7 @@ public class RedisLock implements Lock {
             return true;
         }
         if (!msg.isEmpty()) {
-            throw new LockException(msg);
+            throw new LockException(code, msg);
         }
         return false;
     }

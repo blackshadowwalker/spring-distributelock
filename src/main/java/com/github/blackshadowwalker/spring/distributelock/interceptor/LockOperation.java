@@ -9,19 +9,29 @@ public class LockOperation {
 	String key;
 	long timeout;//seconds
 	long expire;//seconds
+    String code;
 	String msg;
 	boolean autoUnlock;
 
 	public LockOperation() {
 	}
 
-	public LockOperation(String name, String key, long timeout, long expire, String msg, boolean autoUnlock) {
+	public LockOperation(String name, String key, long timeout, long expire, String code, String msg, boolean autoUnlock) {
 		this.name = name;
 		this.key = key;
 		this.timeout = timeout;
 		this.expire = expire;
+		this.code = code;
 		this.msg = msg;
 		this.autoUnlock = autoUnlock;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getMsg() {

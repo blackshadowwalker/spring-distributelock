@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class RedisLockManager implements LockManager {
 
-	private RedisTemplate redisTemplate;
+	private RedisTemplate<Object, Object> redisTemplate;
 
 	private Map<LockOperation, RedisLock> _localCache = new HashMap<LockOperation, RedisLock>();
 
@@ -29,12 +29,12 @@ public class RedisLockManager implements LockManager {
 		long timeout = operation.getTimeout() * 1000;
 		long expire = operation.getExpire() * 1000;
 		if (!cacheLock) {
-			return new RedisLock(name, key, timeout, expire, operation.getMsg(), redisTemplate, operation.isAutoUnlock());
+			return new RedisLock(name, key, timeout, expire, operation.getCode(), operation.getMsg(), redisTemplate, operation.isAutoUnlock());
 		}
 
 		RedisLock lock = _localCache.get(operation);
 		if (lock == null) {
-			lock = new RedisLock(name, key, timeout, expire, operation.getMsg(), redisTemplate, operation.isAutoUnlock());
+			lock = new RedisLock(name, key, timeout, expire, operation.getCode(), operation.getMsg(), redisTemplate, operation.isAutoUnlock());
 			_localCache.put(operation, lock);
 		}
 		return lock;

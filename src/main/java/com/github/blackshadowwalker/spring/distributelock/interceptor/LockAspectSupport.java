@@ -129,7 +129,7 @@ public class LockAspectSupport {
             if (name.isEmpty()) {
                 name = targetClass.getSimpleName() + "#" + method.getName();
             }
-            list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.expire(), lock.errMsg(), lock.autoUnLock()));
+            list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.expire(), lock.errorCode(), lock.errMsg(), lock.autoUnLock()));
         }
         return list;
     }
