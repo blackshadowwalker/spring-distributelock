@@ -4,15 +4,14 @@ import com.github.blackshadowwalker.spring.distributelock.Lock;
 import com.github.blackshadowwalker.spring.distributelock.LockKeyGenerator;
 import com.github.blackshadowwalker.spring.distributelock.LockManager;
 import com.github.blackshadowwalker.spring.distributelock.annotation.DistributeLock;
-import com.github.blackshadowwalker.spring.distributelock.Lock;
-import com.github.blackshadowwalker.spring.distributelock.LockKeyGenerator;
-import com.github.blackshadowwalker.spring.distributelock.LockManager;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.aop.framework.AopProxyUtils;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -28,6 +27,7 @@ import java.util.List;
  * Created by ASUS on 2016/8/16.
  */
 @Aspect
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class LockAspectSupport {
 
     @Pointcut("@annotation(com.github.blackshadowwalker.spring.distributelock.annotation.DistributeLock)")
@@ -129,7 +129,7 @@ public class LockAspectSupport {
             if (name.isEmpty()) {
                 name = targetClass.getSimpleName() + "#" + method.getName();
             }
-            list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.expire(), lock.errMsg(), lock.autoUnLock()));
+            list.add(new LockOperation(name, lock.key(), lock.timeout(), lock.expire(), lock.errorCode(), lock.errMsg(), lock.autoUnLock()));
         }
         return list;
     }

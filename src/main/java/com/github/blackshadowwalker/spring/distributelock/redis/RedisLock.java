@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by ASUS on 2016/8/16.
@@ -16,24 +18,26 @@ import java.util.concurrent.TimeUnit;
 public class RedisLock implements Lock {
     private static Log log = LogFactory.getLog(RedisLock.class);
 
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<Object, Object> redisTemplate;
 
     private final String name;
     private final String key;
     private final long timeout;//ms
     private final long expire;//ms
+    private final String code;
     private final String msg;
     private final boolean autoUnlock;
 
     private final String lockName;
 
-    public RedisLock(String name, String key, long timeout, long expire, String msg, RedisTemplate redisTemplate, boolean autoUnlock) {
+    public RedisLock(String name, String key, long timeout, long expire, String code, String msg, RedisTemplate redisTemplate, boolean autoUnlock) {
         this.name = name;
         this.key = key;
         this.timeout = timeout;
         this.expire = expire;
         this.lockName = this.name + ":" + key;
         this.redisTemplate = redisTemplate;
+        this.code = code;
         this.msg = msg;
         this.autoUnlock = autoUnlock;
     }
@@ -68,6 +72,9 @@ public class RedisLock implements Lock {
         return this.lockName;
     }
 
+    private final ReentrantLock takeLock = new ReentrantLock();
+    private final Condition lockCondition = takeLock.newCondition();
+
     @Override
     public synchronized boolean lock() throws LockException {
         this.locked = false;
@@ -81,7 +88,7 @@ public class RedisLock implements Lock {
             return true;
         }
         if (!msg.isEmpty()) {
-            throw new LockException(msg);
+            throw new LockException(code, msg);
         }
         return false;
     }
@@ -89,44 +96,53 @@ public class RedisLock implements Lock {
     private volatile boolean cancel = false;
 
     private volatile boolean locked = false;
-    long MAX_TIMEOUT = 1000 * 3600 * 2;
+    long MAX_TIMEOUT = 1000 * 3600;
 
     private void tryLock() {
-        BoundValueOperations operations = redisTemplate.boundValueOps(lockName);
-        long st = System.currentTimeMillis();
-        while (!locked) {
-            if (cancel) {
-                break;
-            }
-            long timestamp = System.currentTimeMillis();
-            long expireTime = (expire < 1) ? Long.MAX_VALUE : (timestamp + this.expire);
-            long oldValue = get(operations);
-            if (oldValue > 0 && timestamp > oldValue) {
-                redisTemplate.delete(lockName);
-            }
-
-            locked = operations.setIfAbsent(String.valueOf(expireTime));
-            if (locked) {
-                operations.expire(expire, TimeUnit.MILLISECONDS);
-                log.info("locked " + operations.getKey());
-            }
-            try {
-                Long ttl = operations.getExpire();
-                if (ttl != null && ttl > 10000) {
-                    Thread.sleep(500);
-                } else if (timeout > 0) {
-                    Thread.sleep(50);
-                } else {
-                    Thread.sleep(1000);
+        takeLock.lock();
+        try {
+            BoundValueOperations operations = redisTemplate.boundValueOps(lockName);
+            long st = System.currentTimeMillis();
+            while (!locked) {
+                if (cancel) {
+                    break;
                 }
-            } catch (InterruptedException e) {
+                long timestamp = System.currentTimeMillis();
+                if (timeout > 0 && timestamp - st > timeout) {
+                    break;
+                }
+
+                long expireTime = (expire < 1) ? Long.MAX_VALUE : (timestamp + this.expire);
+                long oldValue = get(operations);
+                if (oldValue > 0 && timestamp > oldValue) {
+                    redisTemplate.delete(lockName);
+                }
+
+                locked = operations.setIfAbsent(String.valueOf(expireTime));
+                if (locked) {
+                    operations.expire(expire, TimeUnit.MILLISECONDS);
+                    log.debug("Locked " + operations.getKey());
+                    return;
+                } else {
+                    try {
+                        if (timeout > 10 * 1000) {
+                            lockCondition.await(timeout / 10, TimeUnit.MILLISECONDS);
+                        } else {
+                            lockCondition.await(timeout, TimeUnit.MILLISECONDS);
+                        }
+                    } catch (InterruptedException e) {
+                    }
+                    if (timeout > 0 && timestamp - st > timeout) {
+                        break;
+                    }
+                    if (timestamp - st > MAX_TIMEOUT) {
+                        break;
+                    }
+                }
             }
-            if (timeout > 0 && timestamp - st > timeout) {
-                break;
-            }
-            if (timestamp - st > MAX_TIMEOUT) {
-                break;
-            }
+        } finally {
+            lockCondition.signalAll();
+            takeLock.unlock();
         }
     }
 
@@ -140,11 +156,17 @@ public class RedisLock implements Lock {
     }
 
     private long get(BoundValueOperations valueOperations) {
-        String value = (String) valueOperations.get();
-        if (StringUtils.isEmpty(value)) {
+        Object value = valueOperations.get();
+        if (value == null) {
             return 0;
         }
-        return Long.parseLong(value);
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        if (value instanceof String) {
+            return StringUtils.isEmpty(value) ? 0 : Long.parseLong(value.toString());
+        }
+        return 0;
     }
 
 }

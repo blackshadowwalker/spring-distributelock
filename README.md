@@ -1,6 +1,6 @@
 # Spring DistributeLock
 
-![Version](https://img.shields.io/badge/Version-1.0.5-brightgreen.svg)
+![Version](https://img.shields.io/badge/Version-1.0.8-brightgreen.svg)
 
 ![jdk    ](https://img.shields.io/badge/Jdk-1.7+-blue.svg)
 
@@ -18,7 +18,7 @@ maven
 <dependency>
     <groupId>com.github.blackshadowwalker.spring</groupId>
     <artifactId>spring-distributelock</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.8</version>
 </dependency>
 ```
 

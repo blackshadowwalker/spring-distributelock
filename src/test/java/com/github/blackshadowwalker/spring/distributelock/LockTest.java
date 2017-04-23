@@ -18,33 +18,37 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * Created by karl on 2016/8/21.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextHierarchy({ @ContextConfiguration(name = "parent", locations = { "classpath:spring-lock.xml" }), })
-public class LockTest extends AbstractJUnit4SpringContextTests {
-	private static Logger log = LoggerFactory.getLogger(LockTest.class);
+@ContextHierarchy({@ContextConfiguration(name = "parent", locations = {"classpath:spring-lock.xml"}),})
+public class
+LockTest extends AbstractJUnit4SpringContextTests {
+    private static Logger log = LoggerFactory.getLogger(LockTest.class);
 
-	@Autowired
-	MyService myService;
+    @Autowired
+    MyService myService;
 
-	@Autowired
-	RedisTemplate redis;
+    @Autowired
+    RedisTemplate redis;
 
-	@Value("${lock.prefix}")
-	String lockPrefix;
+    @Value("${lock.prefix}")
+    String lockPrefix;
 
-	@Test(expected = LockException.class)
-	public void testLock() throws Exception {
-		final Long userId = 1L;
-		myService.insert(userId, 1);
+    @Test(expected = LockException.class)
+    public void testLock() throws Exception {
+        final Long userId = 1L;
+        myService.insert(userId, 1);
 
-		String key = lockPrefix + "updateUserStatus:1";
-		String value = (System.currentTimeMillis() + 1000 * 60) + "";
-		redis.opsForValue().set(key, value);
+        String key = lockPrefix + "updateUserStatus:1";
+        String value = (System.currentTimeMillis() + 1000 * 60) + "";
+        redis.opsForValue().set(key, value);
 
-		try {
-			myService.updateUserStatus(userId, 3);
-		} finally {
-			redis.delete(key);
-		}
-	}
+        try {
+            myService.updateUserStatus(userId, 3);
+        } catch (LockException e) {
+            log.warn("ERROR:{}-{}", e.getCode(), e.getMessage());
+            throw e;
+        } finally {
+            redis.delete(key);
+        }
+    }
 
 }
