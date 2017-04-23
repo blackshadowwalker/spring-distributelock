@@ -16,7 +16,7 @@ public class RedisLockManager implements LockManager {
 
 	private RedisTemplate<Object, Object> redisTemplate;
 
-	private Map<LockOperation, RedisLock> _localCache = new HashMap<LockOperation, RedisLock>();
+	private Map<String, RedisLock> _localCache = new HashMap<String, RedisLock>();
 
 	private boolean cacheLock = false;
 
@@ -32,10 +32,10 @@ public class RedisLockManager implements LockManager {
 			return new RedisLock(name, key, timeout, expire, operation.getCode(), operation.getMsg(), redisTemplate, operation.isAutoUnlock());
 		}
 
-		RedisLock lock = _localCache.get(operation);
+		RedisLock lock = _localCache.get(name + key);
 		if (lock == null) {
 			lock = new RedisLock(name, key, timeout, expire, operation.getCode(), operation.getMsg(), redisTemplate, operation.isAutoUnlock());
-			_localCache.put(operation, lock);
+			_localCache.put(name + key, lock);
 		}
 		return lock;
 	}
