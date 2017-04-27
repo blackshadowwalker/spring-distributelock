@@ -23,11 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by ASUS on 2016/8/16.
- */
 @Aspect
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 public class LockAspectSupport {
 
     @Pointcut("@annotation(com.github.blackshadowwalker.spring.distributelock.annotation.DistributeLock)")
