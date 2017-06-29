@@ -124,6 +124,9 @@ public class RedisLock implements Lock {
                     log.debug("Locked " + operations.getKey());
                     return;
                 } else {
+                    if (timeout == 0) {
+                        break;
+                    }
                     try {
                         if (timeout > 10 * 1000) {
                             lockCondition.await(timeout / 10, TimeUnit.MILLISECONDS);
