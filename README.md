@@ -18,7 +18,7 @@ maven
 <dependency>
     <groupId>com.github.blackshadowwalker.spring</groupId>
     <artifactId>spring-distributelock</artifactId>
-    <version>1.0.8</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -67,6 +67,14 @@ public @interface DistributeLock {
 }
 ```
 
+```java
+public @interface DistributeLocks {
+
+    DistributeLock[] value();
+
+}
+```
+
 ## 2. Usage
 
 ### 2.1 config
@@ -87,8 +95,21 @@ spring xml config
 
 e.g:
 
+DistributeLock
 ```java
 @DistributeLock(value = "updateUserStatus", key = "#userId", timeout = 10, expire = 60, errMsg = "更新失败，请刷新重试")
+public Integer updateUserStatus(Long userId, Integer status) throws Exception {
+    ...
+    return ...;
+}
+```
+
+DistributeLocks
+```java
+@DistributeLocks({
+    @DistributeLock(value = "KEY1", key = "#userId", timeout = 10, expire = 60, errorCode = "401", errMsg = "更新失败，请刷新重试"),
+    @DistributeLock(value = "KEY2", key = "#status", timeout = 10, expire = 60, errorCode = "402", errMsg = "更新失败，请刷新重试")
+})
 public Integer updateUserStatus(Long userId, Integer status) throws Exception {
     ...
     return ...;

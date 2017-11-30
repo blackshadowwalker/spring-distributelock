@@ -6,7 +6,7 @@
 
     <groupId>com.github.blackshadowwalker.spring</groupId>
     <artifactId>spring-distributelock</artifactId>
-    <version>1.0.9</version>
+    <version>1.1.0</version>
 
     <name>Spring Distribute Lock</name>
     <url>https://github.com/blackshadowwalker/spring-distributelock</url>
@@ -20,7 +20,7 @@
             scm:git@github.com:blackshadowwalker/spring-distributelock.git
         </developerConnection>
         <url>https://github.com/blackshadowwalker/spring-distributelock</url>
-        <tag>V-1.0.3</tag>
+        <tag>V-1.1.0</tag>
     </scm>
 
     <developers>

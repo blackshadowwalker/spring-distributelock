@@ -4,6 +4,7 @@ import com.github.blackshadowwalker.spring.distributelock.Lock;
 import com.github.blackshadowwalker.spring.distributelock.LockKeyGenerator;
 import com.github.blackshadowwalker.spring.distributelock.LockManager;
 import com.github.blackshadowwalker.spring.distributelock.annotation.DistributeLock;
+import com.github.blackshadowwalker.spring.distributelock.annotation.DistributeLocks;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,7 +32,11 @@ public class LockAspectSupport {
     private void lockPoint() {
     }
 
-    @Around("lockPoint()")
+    @Pointcut("@annotation(com.github.blackshadowwalker.spring.distributelock.annotation.DistributeLocks)")
+    private void locksPoint() {
+    }
+
+    @Around("lockPoint() || locksPoint()")
     public Object around(final ProceedingJoinPoint pjp) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
         Method method = methodSignature.getMethod();
@@ -120,8 +125,19 @@ public class LockAspectSupport {
 
     private Collection<LockOperation> parseAnnotations(Class<?> targetClass, AnnotatedElement ae, Method method) {
         List<LockOperation> list = new ArrayList<LockOperation>();
-        DistributeLock lock = ae.getAnnotation(DistributeLock.class);
-        if (lock != null) {
+        List<DistributeLock> lockList = new ArrayList<>();
+        DistributeLock lockItem = ae.getAnnotation(DistributeLock.class);
+        if (lockItem != null) {
+            lockList.add(lockItem);
+        }
+        DistributeLocks lockItems = ae.getAnnotation(DistributeLocks.class);
+        if (lockItems != null) {
+            for (DistributeLock v : lockItems.value()) {
+                lockList.add(v);
+            }
+        }
+
+        for (DistributeLock lock : lockList) {
             String name = lock.value();
             if (name.isEmpty()) {
                 name = targetClass.getSimpleName() + "#" + method.getName();

@@ -4,6 +4,7 @@ import com.github.blackshadowwalker.spring.distributelock.Lock;
 import com.github.blackshadowwalker.spring.distributelock.LockException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
@@ -115,7 +116,14 @@ public class RedisLock implements Lock {
                 long expireTime = (expire < 1) ? Long.MAX_VALUE : (timestamp + this.expire);
                 long oldValue = get(operations);
                 if (oldValue > 0 && timestamp > oldValue) {
-                    redisTemplate.delete(lockName);
+                    String newName = "DEL:" + lockName;
+                    try {
+                        Boolean renameSuccess = redisTemplate.renameIfAbsent(lockName, newName);//cas op to ensure only one thread success;
+                        if (Boolean.TRUE.equals(renameSuccess)) {
+                            redisTemplate.delete(newName);
+                        }
+                    } catch (InvalidDataAccessApiUsageException e) {//ERR no such key
+                    }
                 }
 
                 locked = operations.setIfAbsent(String.valueOf(expireTime));
